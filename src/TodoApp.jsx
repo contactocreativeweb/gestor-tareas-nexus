@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Trash2, Clock, CheckCircle2, Circle, Plus, ListTodo, Loader2 } from 'lucide-react';
+import { Target, Trash2, Clock, CheckCircle2, Circle, Plus, ListTodo, Loader2, LogOut, User, Mail, Lock } from 'lucide-react';
 import { differenceInSeconds } from 'date-fns';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import {
   collection,
   addDoc,
@@ -13,11 +13,17 @@ import {
   getDoc,
   serverTimestamp,
   query,
-  orderBy
+  orderBy,
+  where
 } from 'firebase/firestore';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut
+} from 'firebase/auth';
 
 const TASKS_COL = 'tasks';
-const META_DOC = 'meta/appState';
 
 const getPriorityDot = (priority) => {
   switch (priority) {
@@ -92,7 +98,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
             {isCurrent && (
               <div className="text-neon-violet text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-neon-violet animate-ping" />
-                Working On It
+                Trabajando en ello
               </div>
             )}
           </div>
@@ -102,7 +108,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
           <button
             onClick={() => onToggleFocus(task.id)}
             className={`p-2 rounded-xl transition-all duration-300 ${isFocused ? 'bg-electric-blue text-black shadow-[0_0_15px_var(--color-electric-blue)]' : 'bg-white/5 text-gray-400 hover:text-electric-blue hover:bg-white/10'}`}
-            title="Focus Mode"
+            title="Modo Focus"
           >
             <Target size={20} />
           </button>
@@ -126,10 +132,104 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
   );
 };
 
+// ─── Auth Component ──────────────────────────────────────────
+const AuthForm = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+    } catch (err) {
+      setError(err.message.includes('auth/invalid-credential') ? 'Credenciales inválidas' : err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-md mx-auto mt-20 p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl relative overflow-hidden"
+    >
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
+      <div className="text-center mb-8 relative z-10">
+        <div className="w-16 h-16 bg-electric-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-electric-blue/20">
+          <User className="text-electric-blue" size={32} />
+        </div>
+        <h2 className="text-3xl font-black text-white">{isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
+        <p className="text-gray-400 mt-2">Accede para sincronizar tus tareas</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+        <div className="space-y-1.5">
+          <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
+              required
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
+          <div className="relative">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
+              required
+            />
+          </div>
+        </div>
+
+        {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50"
+        >
+          {loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARSE')}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsLogin(!isLogin)}
+          className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2"
+        >
+          {isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}
+        </button>
+      </form>
+    </motion.div>
+  );
+};
+
 // ─── Main App ──────────────────────────────────────────────
 export default function TodoApp() {
+  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [focusedTaskId, setFocusedTaskId] = useState(null);
   const [currentTaskId, setCurrentTaskId] = useState(null);
 
@@ -139,27 +239,48 @@ export default function TodoApp() {
   const [taskNumber, setTaskNumber] = useState('');
   const [priority, setPriority] = useState('Media');
 
+  // ── Auth Listener ──
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
   // ── Real-time Firestore listener ──
   useEffect(() => {
-    const q = query(collection(db, TASKS_COL), orderBy('createdAt', 'desc'));
+    if (!user) {
+      setTasks([]);
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, TASKS_COL), 
+      where('userId', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+    
     const unsub = onSnapshot(q, (snapshot) => {
       setTasks(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
     });
 
-    // Load current task state
-    getDoc(doc(db, 'meta', 'appState')).then(snap => {
+    // Load current task state for this user
+    getDoc(doc(db, 'users', user.uid)).then(snap => {
       if (snap.exists()) setCurrentTaskId(snap.data().currentTaskId ?? null);
     });
 
     return () => unsub();
-  }, []);
+  }, [user]);
 
   const handleAddTask = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || !user) return;
 
     const newTask = {
+      userId: user.uid,
       title,
       description,
       deadline,
@@ -168,8 +289,12 @@ export default function TodoApp() {
       createdAt: serverTimestamp()
     };
 
-    await addDoc(collection(db, TASKS_COL), newTask);
-    setTitle(''); setDescription(''); setDeadline(''); setTaskNumber(''); setPriority('Media');
+    try {
+      await addDoc(collection(db, TASKS_COL), newTask);
+      setTitle(''); setDescription(''); setDeadline(''); setTaskNumber(''); setPriority('Media');
+    } catch (err) {
+      console.error("Error adding task:", err);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -179,19 +304,62 @@ export default function TodoApp() {
   };
 
   const persistCurrentTask = async (id) => {
+    if (!user) return;
     setCurrentTaskId(id);
-    await setDoc(doc(db, 'meta', 'appState'), { currentTaskId: id }, { merge: true });
+    await setDoc(doc(db, 'users', user.uid), { currentTaskId: id }, { merge: true });
   };
 
   const toggleFocus = (id) => setFocusedTaskId(prev => prev === id ? null : id);
   const toggleCurrent = (id) => persistCurrentTask(currentTaskId === id ? null : id);
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="animate-spin text-electric-blue" size={48} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black p-4">
+        <header className="mb-12 text-center mt-6">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500 tracking-tight flex items-center justify-center gap-4">
+            <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
+            Nexus
+          </h1>
+          <p className="text-gray-400 mt-3 font-light tracking-wide">Mantén el enfoque. Sé productivo.</p>
+        </header>
+        <AuthForm />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8 min-h-screen">
-      <header className="mb-12 text-center mt-6">
+    <div className="max-w-4xl mx-auto p-4 md:p-8 min-h-screen relative">
+      <div className="absolute top-6 right-6 z-50">
+        <div className="flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 pr-4 shadow-xl">
+          <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20">
+            <User className="text-electric-blue" size={18} />
+          </div>
+          <div className="hidden sm:block">
+            <p className="text-[10px] text-gray-500 uppercase font-black overflow-hidden truncate max-w-[120px] leading-tight">Usuario Activo</p>
+            <p className="text-xs text-white font-medium overflow-hidden truncate max-w-[120px] leading-tight">{user.email}</p>
+          </div>
+          <button 
+            onClick={() => signOut(auth)}
+            className="p-2 ml-2 rounded-xl text-gray-500 hover:text-neon-red hover:bg-neon-red/10 transition-all"
+            title="Cerrar Sesión"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
+      </div>
+
+      <header className="mb-12 text-center mt-6 pt-16 sm:pt-6">
         <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500 tracking-tight flex items-center justify-center gap-4">
           <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
-          Gestor de Tareas
+          Nexus
         </h1>
         <p className="text-gray-400 mt-3 font-light tracking-wide">Mantén el enfoque. Sé productivo.</p>
       </header>
@@ -268,7 +436,7 @@ export default function TodoApp() {
         {loading ? (
           <div className="flex justify-center items-center py-16 gap-3 text-gray-500">
             <Loader2 size={28} className="animate-spin text-electric-blue" />
-            <span>Cargando tareas...</span>
+            <span>Cargando tus tareas...</span>
           </div>
         ) : (
           <AnimatePresence>
