@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "nexustasks",
     "public": "dist",
     "ignore": [
       "firebase.json",
