@@ -193,7 +193,7 @@ export default function TodoApp() {
           <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
           Gestor de Tareas
         </h1>
-        <p className="text-gray-400 mt-3 font-light tracking-wide">Mantente enfocado. Sé productivo.</p>
+        <p className="text-gray-400 mt-3 font-light tracking-wide">Mantén el enfoque. Sé productivo.</p>
       </header>
 
       <form onSubmit={handleAddTask} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 mb-12 shadow-2xl relative overflow-hidden">
