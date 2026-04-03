@@ -20,7 +20,9 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signOut
+  signOut,
+  FacebookAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 
 const TASKS_COL = 'tasks';
@@ -33,6 +35,12 @@ const getPriorityDot = (priority) => {
     default: return 'bg-gray-400';
   }
 };
+
+const FacebookIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
 
 // ─── Countdown Component ───────────────────────────────────
 const Countdown = ({ deadline }) => {
@@ -151,7 +159,22 @@ const AuthForm = () => {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
-      setError(err.message.includes('auth/invalid-credential') ? 'Credenciales inválidas' : err.message);
+      if (err.message.includes('auth/invalid-credential')) setError('Credenciales inválidas');
+      else if (err.message.includes('auth/email-already-in-use')) setError('El correo ya está registrado');
+      else if (err.message.includes('auth/weak-password')) setError('La contraseña es muy débil');
+      else setError("Error al autenticar. Revisa tus datos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      setLoading(true);
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      setError("Error al conectar con Facebook. Verifica la configuración.");
     } finally {
       setLoading(false);
     }
@@ -161,7 +184,7 @@ const AuthForm = () => {
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="max-w-md mx-auto mt-20 p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl relative overflow-hidden"
+      className="max-w-md mx-auto mt-10 p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl relative overflow-hidden"
     >
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
       <div className="text-center mb-8 relative z-10">
@@ -172,54 +195,71 @@ const AuthForm = () => {
         <p className="text-gray-400 mt-2">Accede para sincronizar tus tareas</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
-        <div className="space-y-1.5">
-          <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
-              required
-            />
-          </div>
-        </div>
-
-        {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
-
+      <div className="space-y-4 relative z-10">
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARSE')}
-        </button>
-
-        <button
+          onClick={signInWithFacebook}
           type="button"
-          onClick={() => setIsLogin(!isLogin)}
-          className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2"
+          className="w-full py-3.5 rounded-2xl font-bold bg-[#1877F2] text-white hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
         >
-          {isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}
+          <FacebookIcon />
+          CONTINUAR CON FACEBOOK
         </button>
-      </form>
+
+        <div className="flex items-center gap-4 py-2">
+          <div className="flex-1 h-[1px] bg-white/10" />
+          <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">O accede con correo</span>
+          <div className="flex-1 h-[1px] bg-white/10" />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
+                required
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR CON CORREO' : 'REGISTRARSE')}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2"
+          >
+            {isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}
+          </button>
+        </form>
+      </div>
     </motion.div>
   );
 };
@@ -323,7 +363,7 @@ export default function TodoApp() {
   if (!user) {
     return (
       <div className="min-h-screen bg-black p-4">
-        <header className="mb-12 text-center mt-6">
+        <header className="mb-6 text-center mt-6">
           <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500 tracking-tight flex items-center justify-center gap-4">
             <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
             Nexus
@@ -339,12 +379,16 @@ export default function TodoApp() {
     <div className="max-w-4xl mx-auto p-4 md:p-8 min-h-screen relative">
       <div className="absolute top-6 right-6 z-50">
         <div className="flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 pr-4 shadow-xl">
-          <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20">
-            <User className="text-electric-blue" size={18} />
+          <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20 overflow-hidden">
+            {user.photoURL ? (
+              <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <User className="text-electric-blue" size={18} />
+            )}
           </div>
           <div className="hidden sm:block">
             <p className="text-[10px] text-gray-500 uppercase font-black overflow-hidden truncate max-w-[120px] leading-tight">Usuario Activo</p>
-            <p className="text-xs text-white font-medium overflow-hidden truncate max-w-[120px] leading-tight">{user.email}</p>
+            <p className="text-xs text-white font-medium overflow-hidden truncate max-w-[120px] leading-tight">{user.displayName || user.email}</p>
           </div>
           <button 
             onClick={() => signOut(auth)}
