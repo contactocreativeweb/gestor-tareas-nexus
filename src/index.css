@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-electric-blue: #00e5ff;
+  --color-electric-blue-hover: #00b3cc;
+  --color-neon-violet: #8a2be2;
+  --color-neon-violet-rgb: 138, 43, 226;
+  --color-emerald-green: #00ff7f;
+  --color-amber: #ffbf00;
+  --color-neon-red: #ff3131;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
