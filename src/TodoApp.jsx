@@ -438,7 +438,14 @@ export default function TodoApp() {
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold ml-2">Fecha y Hora Límite</label>
-            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" style={{ colorScheme: 'dark' }} />
+            <input
+              type="datetime-local"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
+              style={{ colorScheme: 'dark' }}
+            />
           </div>
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-1.5">
