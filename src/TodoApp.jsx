@@ -152,6 +152,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
 
 // ─── Auth Modal Component ───────────────────────────────────
 const AuthModal = ({ onClose, onAuthSuccess }) => {
+  // ... (unchanged)
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -194,74 +195,31 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-      />
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="max-w-md w-full p-8 rounded-3xl bg-[#0a0a0a] border border-white/10 shadow-2xl relative overflow-hidden"
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="max-w-md w-full p-8 rounded-3xl bg-[#0a0a0a] border border-white/10 shadow-2xl relative overflow-hidden" >
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
-        
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
-          <X size={24} />
-        </button>
-
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><X size={24} /></button>
         <div className="text-center mb-8 relative z-10">
-          <div className="w-16 h-16 bg-electric-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-electric-blue/20">
-            <User className="text-electric-blue" size={32} />
-          </div>
+          <div className="w-16 h-16 bg-electric-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-electric-blue/20"><User className="text-electric-blue" size={32} /></div>
           <h2 className="text-3xl font-black text-white">{isLogin ? 'Iniciar Sesión' : 'Crea tu Cuenta'}</h2>
           <p className="text-gray-400 mt-2">Regístrate para guardar y sincronizar tus tareas</p>
         </div>
-
         <div className="space-y-3 relative z-10">
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => signInWithProvider('google')} type="button" className="py-3.5 rounded-2xl font-bold bg-white text-black hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-lg">
-              <GoogleIcon /> GOOGLE
-            </button>
-            <button onClick={() => signInWithProvider('facebook')} type="button" className="py-3.5 rounded-2xl font-bold bg-[#1877F2] text-white hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg">
-              <FacebookIcon /> FACEBOOK
-            </button>
+            <button onClick={() => signInWithProvider('google')} type="button" className="py-3.5 rounded-2xl font-bold bg-white text-black hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-lg"><GoogleIcon /> GOOGLE</button>
+            <button onClick={() => signInWithProvider('facebook')} type="button" className="py-3.5 rounded-2xl font-bold bg-[#1877F2] text-white hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg"><FacebookIcon /> FACEBOOK</button>
           </div>
-
-          <div className="flex items-center gap-4 py-2">
-            <div className="flex-1 h-[1px] bg-white/10" />
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">O utiliza tu correo</span>
-            <div className="flex-1 h-[1px] bg-white/10" />
-          </div>
-
+          <div className="flex items-center gap-4 py-2"><div className="flex-1 h-[1px] bg-white/10" /><span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">O utiliza tu correo</span><div className="flex-1 h-[1px] bg-white/10" /></div>
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required />
-              </div>
+            <div className="space-y-1.5"><label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
+              <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} /><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required />
-              </div>
+            <div className="space-y-1.5"><label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
+              <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
             </div>
-
             {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
-
-            <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50">
-              {loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARME')}
-            </button>
-
-            <button type="button" onClick={() => setIsLogin(!isLogin)} className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2">
-              {isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}
-            </button>
+            <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50">{loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARME')}</button>
+            <button type="button" onClick={() => setIsLogin(!isLogin)} className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2">{isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}</button>
           </form>
         </div>
       </motion.div>
@@ -274,6 +232,7 @@ export default function TodoApp() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false); // Nuevo estado para feedback de guardado
   const [authLoading, setAuthLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [focusedTaskId, setFocusedTaskId] = useState(null);
@@ -302,11 +261,23 @@ export default function TodoApp() {
       return;
     }
 
-    const q = query(collection(db, TASKS_COL), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
-    const unsub = onSnapshot(q, (snapshot) => {
-      setTasks(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-      setLoading(false);
-    });
+    const q = query(
+      collection(db, TASKS_COL), 
+      where('userId', '==', user.uid), 
+      orderBy('createdAt', 'desc')
+    );
+    
+    const unsub = onSnapshot(q, 
+      (snapshot) => {
+        setTasks(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Firestore Listener Error:", error);
+        // Si el índice sigue construyéndose, o si hay un error, lo registramos.
+        // onSnapshot suele reintentar automáticamente al recuperar conexión.
+      }
+    );
 
     getDoc(doc(db, 'users', user.uid)).then(snap => {
       if (snap.exists()) setCurrentTaskId(snap.data().currentTaskId ?? null);
@@ -316,13 +287,15 @@ export default function TodoApp() {
   }, [user]);
 
   const handleAddTask = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!title.trim()) return;
 
     if (!user) {
       setShowAuthModal(true);
       return;
     }
+
+    setSaving(true);
 
     const newTask = {
       userId: user.uid,
@@ -336,35 +309,31 @@ export default function TodoApp() {
 
     try {
       await addDoc(collection(db, TASKS_COL), newTask);
-      setTitle(''); setDescription(''); setDeadline(''); setTaskNumber(''); setPriority('Media');
+      
+      // Delay de 2 segundos solicitado para asegurar visibilidad tras construcción de índice
+      setTimeout(() => {
+        setTitle(''); 
+        setDescription(''); 
+        setDeadline(''); 
+        setTaskNumber(''); 
+        setPriority('Media');
+        setSaving(false);
+      }, 2000);
+
     } catch (err) {
       console.error("Error adding task:", err);
+      setSaving(false);
     }
   };
 
-  // Se llama cuando el usuario se loguea CORRECTAMENTE desde el modal
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
-    // Intentaremos guardar la tarea automáticamente después de que el useEffect de User se actualice
   };
 
   // Guardado automático tras login
   useEffect(() => {
     if (user && title.trim() && showAuthModal === false) {
-      const savePending = async () => {
-        const newTask = {
-          userId: user.uid,
-          title,
-          description,
-          deadline,
-          taskNumber,
-          priority,
-          createdAt: serverTimestamp()
-        };
-        await addDoc(collection(db, TASKS_COL), newTask);
-        setTitle(''); setDescription(''); setDeadline(''); setTaskNumber(''); setPriority('Media');
-      };
-      savePending();
+      handleAddTask();
     }
   }, [user]);
 
@@ -438,14 +407,7 @@ export default function TodoApp() {
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold ml-2">Fecha y Hora Límite</label>
-            <input
-              type="datetime-local"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-              min={new Date().toISOString().slice(0, 16)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all"
-              style={{ colorScheme: 'dark' }}
-            />
+            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={new Date().toISOString().slice(0, 16)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" style={{ colorScheme: 'dark' }} />
           </div>
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-1.5">
@@ -462,9 +424,22 @@ export default function TodoApp() {
             </div>
           </div>
           <div className="md:col-span-2 mt-2">
-            <button type="submit" disabled={!title.trim()} className="w-full py-4 rounded-2xl font-bold tracking-wide text-black bg-electric-blue hover:bg-electric-blue-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] flex items-center justify-center gap-2 group">
-              <Plus className="group-hover:rotate-90 transition-transform duration-300" />
-              AÑADIR TAREA
+            <button 
+              type="submit" 
+              disabled={!title.trim() || saving} 
+              className="w-full py-4 rounded-2xl font-bold tracking-wide text-black bg-electric-blue hover:bg-electric-blue-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] flex items-center justify-center gap-2 group"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  GUARDANDO TAREA...
+                </>
+              ) : (
+                <>
+                  <Plus className="group-hover:rotate-90 transition-transform duration-300" />
+                  AÑADIR TAREA
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -478,7 +453,7 @@ export default function TodoApp() {
           </div>
         ) : (
           <AnimatePresence>
-            {!user || tasks.length === 0 ? (
+            {!user || (tasks.length === 0 && !saving) ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 text-gray-500 flex flex-col items-center gap-4">
                 <div className="p-6 rounded-full bg-white/5 border border-white/10">
                   <CheckCircle2 size={40} className="text-gray-600" />
