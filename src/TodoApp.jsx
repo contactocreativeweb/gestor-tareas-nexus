@@ -251,7 +251,7 @@ export default function TodoApp() {
       <header className="mb-12 text-center mt-6">
         <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500 tracking-tight flex items-center justify-center gap-4">
           <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
-          Nexus Tasks
+          Gestor de Tareas
         </h1>
         <p className="text-gray-400 mt-3 font-light tracking-wide">Stay focused. Stay productive.</p>
       </header>

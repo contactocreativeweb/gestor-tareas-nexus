@@ -1,4 +1,4 @@
-# Nexus Tasks 🎯
+# Gestor de Tareas 🎯
 
 Una aplicación de lista de tareas minimalista y profesional en Dark Mode, equipada con una API RESTful construida en Node.js y un frontend impulsado por React + Vite.
 
