@@ -10,51 +10,16 @@
   --color-neon-red: #ff3131;
 }
 
-:root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f1fcff;
-  --text-primary: #000000;
-  --text-secondary: #333333;
-  --border-color: var(--color-electric-blue);
-  --card-shadow: 0 4px 6px -1px rgba(0, 229, 255, 0.1), 0 2px 4px -1px rgba(0, 229, 255, 0.05);
-  --accent-glow: rgba(0, 229, 255, 0.1);
-}
-
-.dark {
-  --bg-primary: #000000;
-  --bg-secondary: #000000;
-  --bg-surface-hover: #0a0a0a;
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --border-color: var(--color-electric-blue);
-  --accent-blue: #00e5ff;
-  --accent-blue-hover: #00b8d4;
-  --glow-effect: 0 0 15px rgba(0, 229, 255, 0.15);
-}
-
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: #ffffff;
+  color: #000000;
   margin: 0;
   padding: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-.glass-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
-  transition: all 0.3s ease;
-}
-
-.dark .glass-card {
-  box-shadow: var(--glow-effect);
-}
-
-.glass-card:hover {
-  border-color: var(--color-electric-blue);
+.dark body {
+  background-color: #000000;
+  color: #ffffff;
 }

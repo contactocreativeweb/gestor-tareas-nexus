@@ -67,7 +67,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-electric-blue/30 transition-all group shadow-lg glass-card"
+      className="p-2.5 rounded-xl bg-white dark:bg-black border border-electric-blue hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all group shadow-lg"
       title={isDark ? "Modo Claro" : "Modo Oscuro"}
     >
       {isDark ? (
@@ -147,7 +147,7 @@ const PwaInstaller = () => {
         </button>
         <button
           onClick={handleShare}
-          className="flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 font-bold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all shadow-lg"
+          className="flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-white dark:bg-black text-black dark:text-white font-bold border border-electric-blue hover:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all flex-1 max-w-[200px]"
           title="Compartir App"
         >
           <GitBranch size={18} />
@@ -163,7 +163,7 @@ const PwaInstaller = () => {
             exit={{ opacity: 0, height: 0 }}
             className="w-full max-w-md overflow-hidden"
           >
-            <div className="p-6 rounded-3xl glass-card border-electric-blue/20 bg-electric-blue/5">
+            <div className="p-6 rounded-3xl bg-white dark:bg-black border border-electric-blue shadow-[0_0_20px_rgba(0,229,255,0.15)] text-black dark:text-white">
               <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
                 {platform === 'ios' ? <Apple size={20} /> : <Smartphone size={20} />}
                 Pasos para Instalar
@@ -209,7 +209,7 @@ const PwaInstaller = () => {
                       type="text" 
                       readOnly 
                       value={window.location.href} 
-                      className="flex-1 bg-black/10 dark:bg-black/40 border border-electric-blue/50 rounded-xl px-3 py-2.5 text-xs font-mono truncate focus:outline-none focus:border-electric-blue" 
+                      className="flex-1 bg-white dark:bg-black border border-electric-blue rounded-xl px-3 py-2.5 text-xs font-mono truncate text-black dark:text-white focus:outline-none focus:shadow-[0_0_10px_rgba(0,229,255,0.3)]" 
                     />
                     <button
                       onClick={copyLink}
@@ -284,9 +284,9 @@ const Countdown = ({ deadline }) => {
 // ─── Task Card ─────────────────────────────────────────────
 const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCurrent, onSetCurrent }) => {
   const glowClass = isFocused
-    ? 'ring-2 ring-electric-blue shadow-[0_0_20px_rgba(0,229,255,0.5)]'
-    : 'border border-white/10 hover:border-white/20';
-  const currentBadgeClass = isCurrent ? 'ring-1 ring-neon-violet shadow-[0_0_10px_rgba(138,43,226,0.3)] bg-neon-violet/10' : '';
+    ? 'ring-2 ring-electric-blue shadow-[0_0_20px_rgba(0,229,255,0.5)] border-electric-blue'
+    : 'border border-electric-blue shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_15px_rgba(0,229,255,0.2)]';
+  const currentBadgeClass = isCurrent ? 'ring-1 ring-neon-violet shadow-[0_0_10px_rgba(138,43,226,0.3)] bg-neon-violet/5' : '';
 
   return (
     <motion.div
@@ -295,7 +295,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
       animate={{ opacity: isAnyFocused && !isFocused ? 0.4 : 1, y: 0, scale: isAnyFocused && !isFocused ? 0.95 : 1 }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       transition={{ duration: 0.3 }}
-      className={`relative p-5 rounded-3xl glass-card transition-all duration-500 overflow-hidden ${glowClass} ${currentBadgeClass}`}
+      className={`relative p-5 rounded-3xl bg-white dark:bg-black transition-all duration-500 overflow-hidden ${glowClass} ${currentBadgeClass}`}
     >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1 flex flex-col gap-2">
@@ -325,7 +325,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
         <div className="flex flex-col items-center gap-3">
           <button
             onClick={() => onToggleFocus(task.id)}
-            className={`p-2 rounded-xl transition-all duration-300 ${isFocused ? 'bg-electric-blue text-black shadow-[0_0_15px_var(--color-electric-blue)]' : 'bg-white/5 text-gray-400 hover:text-electric-blue hover:bg-white/10'}`}
+            className={`p-2 rounded-xl transition-all duration-300 ${isFocused ? 'bg-electric-blue text-black shadow-[0_0_15px_var(--color-electric-blue)]' : 'bg-transparent text-gray-400 hover:text-electric-blue hover:bg-electric-blue/10'}`}
             title="Modo Focus"
           >
             <Target size={20} />
@@ -396,7 +396,7 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-      <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="max-w-md w-full p-8 rounded-3xl glass-card relative overflow-hidden" >
+      <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-black border border-electric-blue shadow-[0_0_30px_rgba(0,229,255,0.2)] relative overflow-hidden text-black dark:text-white" >
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><X size={24} /></button>
         <div className="text-center mb-8 relative z-10">
@@ -412,10 +412,10 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
           <div className="flex items-center gap-4 py-2"><div className="flex-1 h-[1px] bg-slate-200 dark:bg-white/10" /><span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">O utiliza tu correo</span><div className="flex-1 h-[1px] bg-slate-200 dark:bg-white/10" /></div>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5"><label className="text-xs text-slate-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
-              <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
+              <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all text-black dark:text-white" required /></div>
             </div>
             <div className="space-y-1.5"><label className="text-xs text-slate-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
-              <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
+              <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all text-black dark:text-white" required /></div>
             </div>
             {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
             <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50">{loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARME')}</button>
@@ -571,20 +571,20 @@ export default function TodoApp() {
         <ThemeToggle />
         <div className="z-50">
           {user ? (
-            <div className="flex items-center gap-3 glass-card rounded-2xl p-1.5 shadow-xl">
+            <div className="flex items-center gap-3 bg-white dark:bg-black border border-electric-blue rounded-2xl p-1.5 shadow-[0_0_15px_rgba(0,229,255,0.15)] text-black dark:text-white">
               <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20 overflow-hidden">
                 {user.photoURL ? <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" /> : <User className="text-electric-blue" size={18} />}
               </div>
               <div className="hidden sm:block px-2">
                 <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest leading-none mb-1">CONECTADO</p>
-                <p className="text-xs dark:text-white text-slate-800 font-bold leading-none max-w-[150px] truncate">{user.displayName || user.email.split('@')[0]}</p>
+                <p className="text-xs font-bold leading-none max-w-[150px] truncate">{user.displayName || user.email.split('@')[0]}</p>
               </div>
-              <button onClick={() => signOut(auth)} className="p-2.5 rounded-xl text-gray-500 hover:text-neon-red hover:bg-neon-red/10 transition-all border border-transparent hover:border-neon-red/20" title="Cerrar Sesión">
+              <button onClick={() => signOut(auth)} className="p-2.5 rounded-xl text-gray-400 hover:text-neon-red hover:bg-neon-red/10 transition-all border border-transparent hover:border-neon-red/20" title="Cerrar Sesión">
                 <LogOut size={18} />
               </button>
             </div>
           ) : (
-            <button onClick={() => setShowAuthModal(true)} className="flex items-center gap-2 glass-card rounded-xl px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-300 hover:text-electric-blue transition-all">
+            <button onClick={() => setShowAuthModal(true)} className="flex items-center gap-2 bg-white dark:bg-black border border-electric-blue text-black dark:text-white shadow-[0_0_15px_rgba(0,229,255,0.15)] rounded-xl px-4 py-2.5 text-xs font-bold hover:text-electric-blue dark:hover:text-electric-blue transition-all">
               <User size={16} /> ACCEDER
             </button>
           )}
@@ -592,7 +592,7 @@ export default function TodoApp() {
       </div>
 
       <header className="mb-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 tracking-tight flex items-center justify-center gap-4">
+        <h1 className="text-4xl md:text-5xl font-black text-black dark:text-white tracking-tight flex items-center justify-center gap-4">
           <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
           Nexus
         </h1>
@@ -601,30 +601,30 @@ export default function TodoApp() {
 
       <PwaInstaller />
 
-      <form onSubmit={handleAddTask} className="glass-card rounded-3xl p-6 mb-12 shadow-2xl relative overflow-hidden">
+      <form onSubmit={handleAddTask} className="bg-white dark:bg-black border border-electric-blue rounded-3xl p-6 mb-12 shadow-[0_0_25px_rgba(0,229,255,0.15)] relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
           <div className="md:col-span-2">
-            <input type="text" placeholder="¿Qué necesitas hacer? *" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 dark:text-white text-slate-800 text-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required />
+            <input type="text" placeholder="¿Qué necesitas hacer? *" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl px-5 py-4 text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required />
           </div>
           <div className="md:col-span-2">
-            <textarea placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all min-h-[100px] resize-none" />
+            <textarea placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl px-5 py-4 text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all min-h-[100px] resize-none" />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Fecha y Hora Límite</label>
-            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={new Date().toISOString().slice(0, 16)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
+            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={new Date().toISOString().slice(0, 16)} className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl px-5 py-3.5 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
           </div>
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-1.5">
               <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Nº Tarea (Opcional)</label>
-              <input type="text" placeholder="Ej. T-123" value={taskNumber} onChange={(e) => setTaskNumber(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
+              <input type="text" placeholder="Ej. T-123" value={taskNumber} onChange={(e) => setTaskNumber(e.target.value)} className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl px-5 py-3.5 text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
             </div>
             <div className="flex-1 flex flex-col gap-1.5">
               <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Prioridad</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
-                <option value="Baja" className="dark:bg-black bg-white">🟢 Baja</option>
-                <option value="Media" className="dark:bg-black bg-white">🟡 Media</option>
-                <option value="Alta" className="dark:bg-black bg-white">🔴 Alta</option>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-white dark:bg-black border border-electric-blue rounded-2xl px-5 py-3.5 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
+                <option value="Baja" className="bg-white dark:bg-black">🟢 Baja</option>
+                <option value="Media" className="bg-white dark:bg-black">🟡 Media</option>
+                <option value="Alta" className="bg-white dark:bg-black">🔴 Alta</option>
               </select>
             </div>
           </div>
