@@ -44,10 +44,12 @@ const ThemeToggle = () => {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark');
       setIsDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDark(false);
     }
   }, []);
 
@@ -553,7 +555,7 @@ export default function TodoApp() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <Loader2 className="animate-spin text-electric-blue" size={48} />
       </div>
     );
@@ -619,10 +621,10 @@ export default function TodoApp() {
             </div>
             <div className="flex-1 flex flex-col gap-1.5">
               <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Prioridad</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
-                <option value="Baja" className="dark:bg-slate-900 bg-white">🟢 Baja</option>
-                <option value="Media" className="dark:bg-slate-900 bg-white">🟡 Media</option>
-                <option value="Alta" className="dark:bg-slate-900 bg-white">🔴 Alta</option>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
+                <option value="Baja" className="dark:bg-black bg-white">🟢 Baja</option>
+                <option value="Media" className="dark:bg-black bg-white">🟡 Media</option>
+                <option value="Alta" className="dark:bg-black bg-white">🔴 Alta</option>
               </select>
             </div>
           </div>
