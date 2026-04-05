@@ -138,7 +138,7 @@ const PwaInstaller = () => {
       <div className="flex flex-wrap justify-center gap-3 w-full">
         <button
           onClick={handleInstall}
-          className="flex-1 max-w-[200px] flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-electric-blue text-black font-bold shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:scale-105 transition-all"
+          className="flex-1 max-w-[200px] flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-electric-blue text-black font-bold shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:scale-105 transition-all outline outline-1 outline-electric-blue/50"
         >
           <Download size={18} />
           Instalar App
@@ -171,42 +171,51 @@ const PwaInstaller = () => {
                 {platform === 'ios' ? (
                   <ul className="space-y-3 text-sm">
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
-                      <p>Abre este enlace en <span className="font-bold">Safari</span></p>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
+                      <p>Abre este enlace en <span className="font-bold text-electric-blue">Safari</span></p>
                     </li>
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
                       <p>Toca el icono de <span className="font-bold">Compartir</span> (flecha arriba)</p>
                     </li>
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
                       <p>Selecciona <span className="font-bold">"Agregar a inicio"</span></p>
                     </li>
                   </ul>
                 ) : (
                   <ul className="space-y-3 text-sm">
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
-                      <p>Toca los tres puntos <span className="font-bold">⋮</span> de Chrome</p>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
+                      <p>Abre este enlace en <span className="font-bold text-electric-blue">Chrome</span></p>
                     </li>
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
-                      <p>Selecciona <span className="font-bold">"Instalar Aplicación"</span></p>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
+                      <p>Toca los tres puntos <span className="font-bold text-xl leading-none">⋮</span> del navegador</p>
                     </li>
                     <li className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
-                      <p>O confirma en <span className="font-bold">"Agregar a pantalla de inicio"</span></p>
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 border border-electric-blue/50 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
+                      <p>Selecciona <span className="font-bold">"Agregar a la pantalla principal"</span></p>
                     </li>
                   </ul>
                 )}
                 
-                <div className="pt-4 border-t border-white/10 dark:border-white/5 flex flex-col gap-3">
-                  <button
-                    onClick={copyLink}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all"
-                  >
-                    <Copy size={16} /> COPIAR ENLACE
-                  </button>
+                <div className="pt-4 border-t border-electric-blue/30 flex flex-col gap-3">
+                  <p className="text-xs text-center font-bold text-electric-blue">Copia este enlace y ábrelo en tu navegador:</p>
+                  <div className="flex gap-2 items-center">
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={window.location.href} 
+                      className="flex-1 bg-black/10 dark:bg-black/40 border border-electric-blue/50 rounded-xl px-3 py-2.5 text-xs font-mono truncate focus:outline-none focus:border-electric-blue" 
+                    />
+                    <button
+                      onClick={copyLink}
+                      className="px-4 py-2.5 flex-shrink-0 flex items-center justify-center gap-2 rounded-xl bg-electric-blue text-black hover:bg-electric-blue-hover text-xs font-bold shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all"
+                    >
+                      <Copy size={16} /> COPIAR
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
