@@ -10,12 +10,15 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png'],
+      includeAssets: ['favicon.ico', 'pwa-192.png', 'pwa-512.png'],
       manifest: {
         name: 'Nexus | Gestor de Tareas',
         short_name: 'Nexus',
         description: 'Mantén el enfoque con el gestor de tareas Nexus',
         theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: 'pwa-192.png',
