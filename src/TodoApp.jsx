@@ -446,11 +446,33 @@ export default function TodoApp() {
 
   // ── Auth Listener ──
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+    let fallbackTimer;
+    try {
+      const unsub = onAuthStateChanged(auth, (u) => {
+        setUser(u);
+        setAuthLoading(false);
+        clearTimeout(fallbackTimer);
+      }, (error) => {
+        console.error("Auth Listener Error:", error);
+        setAuthLoading(false);
+        clearTimeout(fallbackTimer);
+      });
+
+      // iOS Chrome / Safari might hang Firebase IndexedDB indefinitely 
+      // preventing onAuthStateChanged from firing. This forces the UI to unlock.
+      fallbackTimer = setTimeout(() => {
+        console.warn("Auth initialization timed out. Forcing UI unlock.");
+        setAuthLoading(false);
+      }, 3500);
+
+      return () => {
+        unsub();
+        clearTimeout(fallbackTimer);
+      };
+    } catch (e) {
+      console.error("Auth setup crashed:", e);
       setAuthLoading(false);
-    });
-    return () => unsub();
+    }
   }, []);
 
   // ── Real-time Firestore listener ──
