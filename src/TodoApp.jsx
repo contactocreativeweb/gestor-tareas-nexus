@@ -25,8 +25,197 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
+import { 
+  GitBranch, 
+  Share2, 
+  Smartphone, 
+  Apple, 
+  Copy, 
+  Moon, 
+  Sun, 
+  Monitor, 
+  Download,
+  Info
+} from 'lucide-react';
 
-const TASKS_COL = 'tasks';
+// ─── Theme Toggle Component ──────────────────────────────────
+const ThemeToggle = () => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    setIsDark(!isDark);
+  };
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-electric-blue/30 transition-all group shadow-lg glass-card"
+      title={isDark ? "Modo Claro" : "Modo Oscuro"}
+    >
+      {isDark ? (
+        <Sun className="text-amber group-hover:scale-110 transition-transform" size={20} />
+      ) : (
+        <Moon className="text-electric-blue group-hover:scale-110 transition-transform" size={20} />
+      )}
+    </button>
+  );
+};
+
+// ─── PWA Installer Component ────────────────────────────────
+const PwaInstaller = () => {
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [platform, setPlatform] = useState('android');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Detect platform
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      setPlatform('ios');
+    } else {
+      setPlatform('android');
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') setDeferredPrompt(null);
+    } else {
+      setShowInstructions(true);
+    }
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Enlace copiado al portapapeles');
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Nexus Task Manager',
+          text: 'Gestiona tus tareas de forma eficiente con Nexus.',
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Error al compartir', err);
+      }
+    } else {
+      copyLink();
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4 w-full mb-8">
+      <div className="flex flex-wrap justify-center gap-3 w-full">
+        <button
+          onClick={handleInstall}
+          className="flex-1 max-w-[200px] flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-electric-blue text-black font-bold shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:scale-105 transition-all"
+        >
+          <Download size={18} />
+          Instalar App
+        </button>
+        <button
+          onClick={handleShare}
+          className="flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 font-bold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all shadow-lg"
+          title="Compartir App"
+        >
+          <GitBranch size={18} />
+          Compartir
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showInstructions && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="w-full max-w-md overflow-hidden"
+          >
+            <div className="p-6 rounded-3xl glass-card border-electric-blue/20 bg-electric-blue/5">
+              <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
+                {platform === 'ios' ? <Apple size={20} /> : <Smartphone size={20} />}
+                Pasos para Instalar
+              </h4>
+              
+              <div className="space-y-4">
+                {platform === 'ios' ? (
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
+                      <p>Abre este enlace en <span className="font-bold">Safari</span></p>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
+                      <p>Toca el icono de <span className="font-bold">Compartir</span> (flecha arriba)</p>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
+                      <p>Selecciona <span className="font-bold">"Agregar a inicio"</span></p>
+                    </li>
+                  </ul>
+                ) : (
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">1</span>
+                      <p>Toca los tres puntos <span className="font-bold">⋮</span> de Chrome</p>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">2</span>
+                      <p>Selecciona <span className="font-bold">"Instalar Aplicación"</span></p>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-electric-blue/20 flex items-center justify-center text-xs font-bold text-electric-blue flex-shrink-0">3</span>
+                      <p>O confirma en <span className="font-bold">"Agregar a pantalla de inicio"</span></p>
+                    </li>
+                  </ul>
+                )}
+                
+                <div className="pt-4 border-t border-white/10 dark:border-white/5 flex flex-col gap-3">
+                  <button
+                    onClick={copyLink}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all"
+                  >
+                    <Copy size={16} /> COPIAR ENLACE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const getPriorityDot = (priority) => {
   switch (priority) {
@@ -95,7 +284,7 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
       animate={{ opacity: isAnyFocused && !isFocused ? 0.4 : 1, y: 0, scale: isAnyFocused && !isFocused ? 0.95 : 1 }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       transition={{ duration: 0.3 }}
-      className={`relative p-5 rounded-3xl bg-white/5 backdrop-blur-md transition-all duration-500 overflow-hidden ${glowClass} ${currentBadgeClass}`}
+      className={`relative p-5 rounded-3xl glass-card transition-all duration-500 overflow-hidden ${glowClass} ${currentBadgeClass}`}
     >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1 flex flex-col gap-2">
@@ -103,13 +292,13 @@ const TaskItem = ({ task, onDelete, isFocused, onToggleFocus, isAnyFocused, isCu
             <div className={`w-3 h-3 rounded-full flex-shrink-0 animate-pulse ${getPriorityDot(task.priority)}`} title={`Prioridad ${task.priority}`} />
             <div className="flex items-center gap-2 flex-wrap">
               {task.taskNumber && (
-                <span className="text-xs font-mono bg-white/10 text-white/70 px-2 py-1 rounded-md">#{task.taskNumber}</span>
+                <span className="text-xs font-mono bg-electric-blue/10 text-electric-blue/70 px-2 py-1 rounded-md">#{task.taskNumber}</span>
               )}
-              <h3 className="text-xl font-semibold text-white">{task.title}</h3>
+              <h3 className="text-xl font-semibold dark:text-white text-slate-800">{task.title}</h3>
             </div>
           </div>
           {task.description && (
-            <p className="text-sm text-gray-400 pl-6 leading-relaxed">{task.description}</p>
+            <p className="text-sm dark:text-gray-400 text-slate-500 pl-6 leading-relaxed">{task.description}</p>
           )}
           <div className="flex items-center gap-4 mt-2 pl-6 flex-wrap">
             {task.deadline && <Countdown deadline={task.deadline} />}
@@ -196,30 +385,30 @@ const AuthModal = ({ onClose, onAuthSuccess }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-      <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="max-w-md w-full p-8 rounded-3xl bg-[#0a0a0a] border border-white/10 shadow-2xl relative overflow-hidden" >
+      <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="max-w-md w-full p-8 rounded-3xl glass-card relative overflow-hidden" >
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><X size={24} /></button>
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><X size={24} /></button>
         <div className="text-center mb-8 relative z-10">
           <div className="w-16 h-16 bg-electric-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-electric-blue/20"><User className="text-electric-blue" size={32} /></div>
-          <h2 className="text-3xl font-black text-white">{isLogin ? 'Iniciar Sesión' : 'Crea tu Cuenta'}</h2>
-          <p className="text-gray-400 mt-2">Regístrate para guardar y sincronizar tus tareas</p>
+          <h2 className="text-3xl font-black">{isLogin ? 'Iniciar Sesión' : 'Crea tu Cuenta'}</h2>
+          <p className="text-slate-500 dark:text-gray-400 mt-2">Regístrate para guardar y sincronizar tus tareas</p>
         </div>
         <div className="space-y-3 relative z-10">
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => signInWithProvider('google')} type="button" className="py-3.5 rounded-2xl font-bold bg-white text-black hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-lg"><GoogleIcon /> GOOGLE</button>
+            <button onClick={() => signInWithProvider('google')} type="button" className="py-3.5 rounded-2xl font-bold bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm"><GoogleIcon /> GOOGLE</button>
             <button onClick={() => signInWithProvider('facebook')} type="button" className="py-3.5 rounded-2xl font-bold bg-[#1877F2] text-white hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg"><FacebookIcon /> FACEBOOK</button>
           </div>
-          <div className="flex items-center gap-4 py-2"><div className="flex-1 h-[1px] bg-white/10" /><span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">O utiliza tu correo</span><div className="flex-1 h-[1px] bg-white/10" /></div>
+          <div className="flex items-center gap-4 py-2"><div className="flex-1 h-[1px] bg-slate-200 dark:bg-white/10" /><span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">O utiliza tu correo</span><div className="flex-1 h-[1px] bg-slate-200 dark:bg-white/10" /></div>
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1.5"><label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
-              <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} /><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
+            <div className="space-y-1.5"><label className="text-xs text-slate-400 uppercase tracking-widest font-bold ml-2">Correo Electrónico</label>
+              <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
             </div>
-            <div className="space-y-1.5"><label className="text-xs text-gray-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
-              <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
+            <div className="space-y-1.5"><label className="text-xs text-slate-400 uppercase tracking-widest font-bold ml-2">Contraseña</label>
+              <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required /></div>
             </div>
             {error && <p className="text-neon-red text-sm text-center font-medium bg-neon-red/10 py-2 rounded-xl">{error}</p>}
             <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold bg-electric-blue text-black hover:bg-electric-blue-hover transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 group disabled:opacity-50">{loading ? <Loader2 className="animate-spin" /> : (isLogin ? 'ENTRAR' : 'REGISTRARME')}</button>
-            <button type="button" onClick={() => setIsLogin(!isLogin)} className="w-full text-sm text-gray-400 hover:text-white transition-colors py-2">{isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}</button>
+            <button type="button" onClick={() => setIsLogin(!isLogin)} className="w-full text-sm text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors py-2">{isLogin ? '¿No tienes cuenta? Regístrate gratis' : '¿Ya tienes cuenta? Inicia sesión'}</button>
           </form>
         </div>
       </motion.div>
@@ -367,59 +556,64 @@ export default function TodoApp() {
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onAuthSuccess={handleAuthSuccess} />}
       </AnimatePresence>
 
-      <div className="absolute top-6 right-6 z-50">
-        {user ? (
-          <div className="flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-1.5 shadow-xl">
-            <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20 overflow-hidden">
-              {user.photoURL ? <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" /> : <User className="text-electric-blue" size={18} />}
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <ThemeToggle />
+        <div className="z-50">
+          {user ? (
+            <div className="flex items-center gap-3 glass-card rounded-2xl p-1.5 shadow-xl">
+              <div className="w-10 h-10 rounded-xl bg-electric-blue/10 flex items-center justify-center border border-electric-blue/20 overflow-hidden">
+                {user.photoURL ? <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" /> : <User className="text-electric-blue" size={18} />}
+              </div>
+              <div className="hidden sm:block px-2">
+                <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest leading-none mb-1">CONECTADO</p>
+                <p className="text-xs dark:text-white text-slate-800 font-bold leading-none max-w-[150px] truncate">{user.displayName || user.email.split('@')[0]}</p>
+              </div>
+              <button onClick={() => signOut(auth)} className="p-2.5 rounded-xl text-gray-500 hover:text-neon-red hover:bg-neon-red/10 transition-all border border-transparent hover:border-neon-red/20" title="Cerrar Sesión">
+                <LogOut size={18} />
+              </button>
             </div>
-            <div className="hidden sm:block px-2">
-              <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest leading-none mb-1">CONECTADO</p>
-              <p className="text-xs text-white font-bold leading-none max-w-[150px] truncate">{user.displayName || user.email.split('@')[0]}</p>
-            </div>
-            <button onClick={() => signOut(auth)} className="p-2.5 rounded-xl text-gray-500 hover:text-neon-red hover:bg-neon-red/10 transition-all border border-transparent hover:border-neon-red/20" title="Cerrar Sesión">
-              <LogOut size={18} />
+          ) : (
+            <button onClick={() => setShowAuthModal(true)} className="flex items-center gap-2 glass-card rounded-xl px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-300 hover:text-electric-blue transition-all">
+              <User size={16} /> ACCEDER
             </button>
-          </div>
-        ) : (
-          <button onClick={() => setShowAuthModal(true)} className="flex items-center gap-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all">
-            <User size={16} /> ACCEDER
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
-      <header className="mb-12 text-center mt-6 pt-16 sm:pt-6">
-        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500 tracking-tight flex items-center justify-center gap-4">
+      <header className="mb-8 text-center">
+        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 tracking-tight flex items-center justify-center gap-4">
           <ListTodo className="text-electric-blue drop-shadow-[0_0_15px_var(--color-electric-blue)]" size={40} />
           Nexus
         </h1>
-        <p className="text-gray-400 mt-3 font-light tracking-wide">Mantén el enfoque. Sé productivo.</p>
+        <p className="text-slate-500 dark:text-gray-400 mt-3 font-light tracking-wide">Mantén el enfoque. Sé productivo.</p>
       </header>
 
-      <form onSubmit={handleAddTask} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 mb-12 shadow-2xl relative overflow-hidden">
+      <PwaInstaller />
+
+      <form onSubmit={handleAddTask} className="glass-card rounded-3xl p-6 mb-12 shadow-2xl relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-electric-blue/20 rounded-full blur-[80px] pointer-events-none" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
           <div className="md:col-span-2">
-            <input type="text" placeholder="¿Qué necesitas hacer? *" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all shadow-inner" required />
+            <input type="text" placeholder="¿Qué necesitas hacer? *" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 dark:text-white text-slate-800 text-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" required />
           </div>
           <div className="md:col-span-2">
-            <textarea placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all min-h-[100px] resize-none" />
+            <textarea placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all min-h-[100px] resize-none" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold ml-2">Fecha y Hora Límite</label>
-            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={new Date().toISOString().slice(0, 16)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" style={{ colorScheme: 'dark' }} />
+            <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Fecha y Hora Límite</label>
+            <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={new Date().toISOString().slice(0, 16)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
           </div>
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-1.5">
-              <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold ml-2">Nº Tarea (Opcional)</label>
-              <input type="text" placeholder="Ej. T-123" value={taskNumber} onChange={(e) => setTaskNumber(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
+              <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Nº Tarea (Opcional)</label>
+              <input type="text" placeholder="Ej. T-123" value={taskNumber} onChange={(e) => setTaskNumber(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all" />
             </div>
             <div className="flex-1 flex flex-col gap-1.5">
-              <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold ml-2">Prioridad</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
-                <option value="Baja" className="bg-black">🟢 Baja</option>
-                <option value="Media" className="bg-black">🟡 Media</option>
-                <option value="Alta" className="bg-black">🔴 Alta</option>
+              <label className="text-xs text-slate-400 dark:text-gray-400 uppercase tracking-wider font-semibold ml-2">Prioridad</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-electric-blue transition-all appearance-none cursor-pointer">
+                <option value="Baja" className="dark:bg-slate-900 bg-white">🟢 Baja</option>
+                <option value="Media" className="dark:bg-slate-900 bg-white">🟡 Media</option>
+                <option value="Alta" className="dark:bg-slate-900 bg-white">🔴 Alta</option>
               </select>
             </div>
           </div>
@@ -468,6 +662,11 @@ export default function TodoApp() {
           </AnimatePresence>
         )}
       </div>
+      <footer className="mt-20 py-8 border-t border-slate-200 dark:border-white/10 text-center">
+        <p className="text-slate-500 dark:text-gray-500 text-sm font-medium">
+          © Creativeweb IA 2026 - Todos los Derechos Reservados
+        </p>
+      </footer>
     </div>
   );
 }
