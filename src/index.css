@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-electric-blue: #00e5ff;
   --color-electric-blue-hover: #00b3cc;
